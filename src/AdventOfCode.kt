@@ -1,10 +1,8 @@
-import season_2015.*
-
 /**
- * Created by gregk on 18/10/2016.
+ * Created by melquiadess on 18/10/2016.
  */
 fun main(args: Array<String>) {
-    var day : BaseDay = Day01(); //day.run()
+    var day : BaseDay
 
 //    day = Day02(); day.run()
 //    day = Day03(); day.run()
@@ -17,5 +15,6 @@ fun main(args: Array<String>) {
 //    day = Day13(); day.run()
 //    day = Day14(); day.run()
 //    day = Day15(); day.run()
-    day = season_2016.Day01(); day.run()
+//    day = season_2016.Day01(); day.run()
+    day = season_2016.Day02(); day.run()
 }
