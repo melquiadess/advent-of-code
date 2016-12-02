@@ -1,5 +1,7 @@
 package season_2015
 
+import BaseDay
+
 /**
  * Created by gregk on 11/11/2016.
  */

@@ -4,6 +4,9 @@ package season_2015
  * Created by gregk on 25/10/2016.
  * DONE
  */
+
+import BaseDay
+
 class Day02 : BaseDay {
     override fun run() {
         println("Day02")
