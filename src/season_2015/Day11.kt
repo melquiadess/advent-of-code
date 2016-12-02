@@ -68,9 +68,7 @@ class Day11 : BaseDay {
         return false
     }
 
-    fun noForbiddenLetters(str: String) : Boolean {
-        return 'i' !in str && 'o' !in str && 'l' !in str
-    }
+    fun noForbiddenLetters(str: String) = 'i' !in str && 'o' !in str && 'l' !in str
 
     fun hasTwoDoubles(str: String) : Boolean {
         var count = 0
