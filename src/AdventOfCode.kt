@@ -16,5 +16,9 @@ fun main(args: Array<String>) {
 //    day = Day14(); day.run()
 //    day = Day15(); day.run()
 //    day = season_2016.Day01(); day.run()
-    day = season_2016.Day02(); day.run()
+//    day = season_2016.Day02(); day.run()
+//    day = season_2016.Day03(); day.run()
+//    day = season_2016.Day04(); day.run()
+//    day = season_2016.Day05(); day.run()
+    day = season_2016.Day06(); day.run()
 }
