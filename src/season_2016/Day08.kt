@@ -7,9 +7,6 @@ import BaseDay
 
 /**
  * Created by melquiadess on 08/12/2016.
- *
- * Part 1:
- * 21 - too low
  */
 class Day08 : BaseDay {
     var list: MutableList<String> = mutableListOf()

@@ -5,8 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
- * Created by gregk on 06/12/2016.
- *
+ * Created by melquiadess on 06/12/2016.
  */
 class Day06 : BaseDay {
     var list: MutableList<String> = mutableListOf()

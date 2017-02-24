@@ -5,7 +5,6 @@ import java.security.MessageDigest
 
 /**
  * Created by melquiadess on 12/12/2016.
- *
  */
 class Day14 : BaseDay {
     var SALT = "ahsbgdzn"

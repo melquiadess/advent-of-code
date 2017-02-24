@@ -6,11 +6,7 @@ import java.nio.file.Paths
 import kotlin.comparisons.compareByDescending
 
 /**
- * Created by gregk on 03/12/2016.
- *
- * Part 1:
- * 191663 - too high
- * 158835
+ * Created by melquiadess on 03/12/2016.
  */
 class Day04 : BaseDay {
     var sumOfId: Int = 0

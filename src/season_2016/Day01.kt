@@ -4,11 +4,6 @@ import BaseDay
 
 /**
  * Created by melquiadess on 01/12/2016.
- * Part 1:
- *  35: too low
- *  307: correct (some moves have 3-digit, eg. R188, but I was taking only first digit
- * Part 2:
- *  165
  */
 class Day01 : BaseDay {
     enum class Direction { NORTH, EAST, SOUTH, WEST }

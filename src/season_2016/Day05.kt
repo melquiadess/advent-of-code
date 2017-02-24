@@ -5,10 +5,7 @@ import season_2015.Stopwatch
 import java.security.MessageDigest
 
 /**
- * Created by gregk on 05/12/2016.
- *
- * Part 2
- * f2c730e5
+ * Created by melquiadess on 05/12/2016.
  */
 class Day05 : BaseDay {
     val INPUT = "ugkcyxxp"

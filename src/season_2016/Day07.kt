@@ -5,14 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
- * Created by gregk on 07/12/2016.
- *
- * Part 2:
- * 128 - too low
- * 133 - too low
- * 204 - too low
- * 260 - wrong
- * 258 - correct
+ * Created by melquiadess on 07/12/2016.
  */
 class Day07 : BaseDay {
     var list: MutableList<String> = mutableListOf()
