@@ -6,7 +6,14 @@ import BaseDay
  */
 class Day01 : BaseDay {
     override fun run() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        println("2017.Day01")
     }
 
+    fun part1() {
+
+    }
+
+    fun part2() {
+
+    }
 }
