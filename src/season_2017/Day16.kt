@@ -13,7 +13,8 @@ import Stopwatch
 class Day16 : AbstractDay("Day16") {
     var list: MutableList<String> = mutableListOf()
 
-    var programs = "abcdefghijklmnop"
+    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt(), 'f'.toInt(), 'g'.toInt(), 'h'.toInt(), 'i'.toInt(), 'j'.toInt(), 'k'.toInt(), 'l'.toInt(), 'm'.toInt(), 'n'.toInt(), 'o'.toInt(), 'p'.toInt())
+//    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt())
 
     private fun getInput() {
         list = readFile("src/season_2017/input/day16-input")
@@ -25,7 +26,7 @@ class Day16 : AbstractDay("Day16") {
 
         println(list)
 
-        runTests()
+        //runTests()
 
         val moves = list[0].split(",")
 
@@ -36,14 +37,15 @@ class Day16 : AbstractDay("Day16") {
         var splits: List<String>
         var posA = 0
         var posB = 0
-        var a: String
-        var b: String
+        var a: Char
+        var b: Char
 
-//        for (i in 0..1000000000) {
-//            if (i.rem(1000) == 0) {
-//                println("$i moves in ${timer.getElapsedSeconds()} seconds")
-//            }
+        for (i in 0..1000000000) {
+            if (i.rem(1000) == 0) {
+                println("$i moves in ${timer.getElapsedSeconds()} seconds")
+            }
             moves.forEachIndexed { index, move ->
+//                println("index: $index -> $move")
                 firstLetter = move[0]
                 when (firstLetter) {
                     's' -> programs = spin(programs, move.substring(1).toInt())
@@ -56,16 +58,18 @@ class Day16 : AbstractDay("Day16") {
                     }
                     'p' -> {
                         // pp/n
-                        splits = move.split("/")
-                        a = splits[0].substring(1)
-                        b = splits[1]
-                        programs = partner(programs, a.single(), b.single())
+                        a = move[1]
+                        b = move[3]
+                        programs = partner(programs, a.toInt(), b.toInt())
                     }
                 }
             }
-//        }
+        }
 
-        println("FINAL programs: $programs in ${timer.getElapsedSeconds()} seconds")
+        var answer = ""
+        programs.forEach { letter -> answer += letter.toChar() }
+
+        println("FINAL programs: ${answer} in ${timer.getElapsedSeconds()} seconds")
     }
 
     private fun runTests() {
@@ -74,52 +78,59 @@ class Day16 : AbstractDay("Day16") {
         testPartner()
     }
 
-    private fun spin(programs: String, moves: Int): String {
-        val offset = programs.length - moves
-        val left = programs.substring(0 until offset)
-        val right = programs.substring(offset)
+    var tempSpinArray: Array<Int> = Array(16, { 0 } )
+    private fun spin(programs: Array<Int>, moves: Int): Array<Int> {
+        tempSpinArray = Array(16, { 0 } )
+        val offset = programs.size - moves
 
-        return right + left
+        for (i in 0 until moves) {
+            tempSpinArray[i] = programs[offset + i]
+        }
+        for (i in 0 until offset) {
+            tempSpinArray[programs.size - offset + i] = programs[i]
+        }
+
+        return tempSpinArray
     }
 
     private fun testSpin() {
-        assert(spin("abcde", 3) == "cdeab")
-        assert(spin("abcde", 1) == "eabcd")
-        assert(spin("abcde", 0) == "abcde")
-        assert(spin("abcde", 5) == "abcde")
-        assert(spin("abcde", 5) != "abcdf")
+        val original = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt())
+        val spinned = spin(original, 1)
+        val target = arrayOf('e'.toInt(), 'a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt())
+        assert(spinned.contentEquals(target))
+
+        assert(spin(original, 0).contentEquals(original))
+        assert(spin(original, 5).contentEquals(original))
     }
 
-    private fun exchange(programs: String, posA: Int, posB: Int): String {
-        var array = programs.toCharArray()
-        val a = array[posA]
-        val b = array[posB]
+    private fun exchange(programs: Array<Int>, posA: Int, posB: Int): Array<Int> {
+        val a = programs[posA]
+        val b = programs[posB]
 
-        array[posA] = b
-        array[posB] = a
+        programs[posA] = b
+        programs[posB] = a
 
-        return array.joinToString("")
+        return programs
     }
 
     private fun testExchange() {
-        assert(exchange("eabcd", 3, 4) == "eabdc")
-        assert(exchange("abcde", 0, 4) == "ebcda")
-        assert(exchange("abcde", 3, 1) == "adcbe")
+        assert(exchange(arrayOf(1,2,3,4,5), 0, 4).contentEquals(arrayOf(5,2,3,4,1)))
+        assert(exchange(arrayOf(1,2,3,4,5), 3, 4).contentEquals(arrayOf(1,2,3,5,4)))
     }
 
-    private fun partner(programs: String, progA: Char, progB: Char): String {
-        var array = programs.toCharArray()
+    private fun partner(programs: Array<Int>, progA: Int, progB: Int): Array<Int> {
         val posA = programs.indexOf(progA)
         val posB = programs.indexOf(progB)
 
-        array[posA] = progB
-        array[posB] = progA
+        programs[posA] = progB
+        programs[posB] = progA
 
-        return array.joinToString("")
+        return programs
     }
 
     private fun testPartner() {
-        assert(partner("eabdc", 'e', 'b') == "baedc")
+        assert(partner(arrayOf(1,2,3,4,5), 1, 5).contentEquals(arrayOf(5,2,3,4,1)))
+        assert(partner(arrayOf(100, 200), 100, 200).contentEquals(arrayOf(200, 100)))
     }
 
     override fun part2() {
