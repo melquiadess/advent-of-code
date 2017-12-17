@@ -20,14 +20,15 @@ class Day16 : AbstractDay("Day16") {
         list = readFile("src/season_2017/input/day16-input")
     }
 
-    data class Move(val type: Char, val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Char = 'z', val b: Char = 'z')
+    data class Move(val type: Char = 'q', val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Char = 'z', val b: Char = 'z')
 
-    val moveList: MutableList<Move> = mutableListOf()
+    val moveList: Array<Move> = Array(10000, { Move() })
 
     private fun doMove(programs: Array<Int>, move: Move): Array<Int> {
         return when (move.type) {
             's' -> spin(programs, move.spin)
             'x' -> exchange(programs, move.posA, move.posB)
+            'q' -> programs
             else -> partner(programs, move.a.toInt(), move.b.toInt())
         }
     }
@@ -57,7 +58,8 @@ class Day16 : AbstractDay("Day16") {
             firstLetter = move[0]
             when (firstLetter) {
                 's' -> {
-                    moveList.add(Move(firstLetter, move.substring(1).toInt()))
+//                    moveList.add(Move(firstLetter, move.substring(1).toInt()))
+                    moveList[index] = Move(firstLetter, move.substring(1).toInt())
                 }
                 'x' -> {
                     // x13/14
@@ -65,14 +67,16 @@ class Day16 : AbstractDay("Day16") {
                     posA = splits[0].substring(1).toInt()
                     posB = splits[1].toString().toInt()
 
-                    moveList.add(Move(firstLetter, posA = posA, posB = posB))
+//                    moveList.add(Move(firstLetter, posA = posA, posB = posB))
+                    moveList[index] = Move(firstLetter, posA = posA, posB = posB)
                 }
                 'p' -> {
                     // pp/n
                     a = move[1]
                     b = move[3]
 
-                    moveList.add(Move(firstLetter, a = a, b = b))
+//                    moveList.add(Move(firstLetter, a = a, b = b))
+                    moveList[index] = Move(firstLetter, a = a, b = b)
                 }
             }
         }
