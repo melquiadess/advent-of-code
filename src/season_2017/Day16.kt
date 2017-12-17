@@ -20,6 +20,18 @@ class Day16 : AbstractDay("Day16") {
         list = readFile("src/season_2017/input/day16-input")
     }
 
+    data class Move(val type: Char, val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Char = 'z', val b: Char = 'z')
+
+    val moveList: MutableList<Move> = mutableListOf()
+
+    private fun doMove(programs: Array<Int>, move: Move): Array<Int> {
+        return when (move.type) {
+            's' -> spin(programs, move.spin)
+            'x' -> exchange(programs, move.posA, move.posB)
+            else -> partner(programs, move.a.toInt(), move.b.toInt())
+        }
+    }
+
     override fun part1() {
         println("PART 1")
         getInput()
@@ -40,29 +52,38 @@ class Day16 : AbstractDay("Day16") {
         var a: Char
         var b: Char
 
+        // cache moves
+        moves.forEachIndexed { index, move ->
+            firstLetter = move[0]
+            when (firstLetter) {
+                's' -> {
+                    moveList.add(Move(firstLetter, move.substring(1).toInt()))
+                }
+                'x' -> {
+                    // x13/14
+                    splits = move.split("/")
+                    posA = splits[0].substring(1).toInt()
+                    posB = splits[1].toString().toInt()
+
+                    moveList.add(Move(firstLetter, posA = posA, posB = posB))
+                }
+                'p' -> {
+                    // pp/n
+                    a = move[1]
+                    b = move[3]
+
+                    moveList.add(Move(firstLetter, a = a, b = b))
+                }
+            }
+        }
+
+
         for (i in 0..1000000000) {
-            if (i.rem(1000) == 0) {
+            if (i.rem(100000) == 0) {
                 println("$i moves in ${timer.getElapsedSeconds()} seconds")
             }
-            moves.forEachIndexed { index, move ->
-//                println("index: $index -> $move")
-                firstLetter = move[0]
-                when (firstLetter) {
-                    's' -> programs = spin(programs, move.substring(1).toInt())
-                    'x' -> {
-                        // x13/14
-                        splits = move.split("/")
-                        posA = splits[0].substring(1).toInt()
-                        posB = splits[1].toString().toInt()
-                        programs = exchange(programs, posA, posB)
-                    }
-                    'p' -> {
-                        // pp/n
-                        a = move[1]
-                        b = move[3]
-                        programs = partner(programs, a.toInt(), b.toInt())
-                    }
-                }
+            moveList.forEach { move ->
+                programs = doMove(programs, move)
             }
         }
 
