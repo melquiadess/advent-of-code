@@ -100,7 +100,7 @@ class Day16 : AbstractDay("Day16") {
     }
 
     var tempSpinArray: Array<Int> = Array(16, { 0 } )
-    private fun spin(programs: Array<Int>, moves: Int): Array<Int> {
+    private inline fun spin(programs: Array<Int>, moves: Int): Array<Int> {
         tempSpinArray = Array(16, { 0 } )
         val offset = programs.size - moves
 
@@ -124,7 +124,7 @@ class Day16 : AbstractDay("Day16") {
         assert(spin(original, 5).contentEquals(original))
     }
 
-    private fun exchange(programs: Array<Int>, posA: Int, posB: Int): Array<Int> {
+    private inline fun exchange(programs: Array<Int>, posA: Int, posB: Int): Array<Int> {
         val a = programs[posA]
         val b = programs[posB]
 
@@ -139,7 +139,7 @@ class Day16 : AbstractDay("Day16") {
         assert(exchange(arrayOf(1,2,3,4,5), 3, 4).contentEquals(arrayOf(1,2,3,5,4)))
     }
 
-    private fun partner(programs: Array<Int>, progA: Int, progB: Int): Array<Int> {
+    private inline fun partner(programs: Array<Int>, progA: Int, progB: Int): Array<Int> {
         val posA = programs.indexOf(progA)
         val posB = programs.indexOf(progB)
 
