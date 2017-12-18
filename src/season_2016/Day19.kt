@@ -1,7 +1,7 @@
 package season_2016
 
 import BaseDay
-import season_2015.Stopwatch
+import Stopwatch
 
 /**
  * Created by melquiadess on 19/12/2016.

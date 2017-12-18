@@ -1,5 +1,3 @@
-package season_2015
-
 import java.util.*
 
 /**
