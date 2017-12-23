@@ -44,11 +44,21 @@ class Day22 : AbstractDay("Day21") {
                 }
             }
         }
+
+        fun reverse() {
+            dir = when (dir) {
+                Day19.Dir.UP -> Day19.Dir.DOWN
+                Day19.Dir.RIGHT -> Day19.Dir.LEFT
+                Day19.Dir.DOWN -> Day19.Dir.UP
+                Day19.Dir.LEFT -> Day19.Dir.RIGHT
+            }
+        }
     }
 
     var virus: Virus = Virus(0, 0)
 
     private fun getInput() {
+        list.clear()
         list = readFile("src/season_2017/input/day22-input")
 //        list = readFile("src/season_2017/input/day22-input-test")
 
@@ -61,6 +71,8 @@ class Day22 : AbstractDay("Day21") {
         virus = Virus(width/2, height/2, Day19.Dir.UP)
 
         println("x: $xOffset y: $yOffset")
+
+        grid = Array(width, { Array(height, {"."}) })
 
         list.forEachIndexed { y, line ->
             line.forEachIndexed { x, c ->
@@ -121,5 +133,47 @@ class Day22 : AbstractDay("Day21") {
     override fun part2() {
         println()
         println("PART 2")
+
+        getInput()
+
+        //printGrid()
+
+        var burstsThatInfect = 0
+
+        var currentNode: String = ""
+
+        for (i in 0 until 10000000) {
+            currentNode = grid[virus.y][virus.x]
+            //println("Virus is here: $virus")
+
+            // if current node is infected - turn right, else turn left
+            // if current node is clean - infect it, if it's infected - clean it
+            when (currentNode) {
+                "#" -> {
+                    virus.turn(Day19.Dir.RIGHT)
+                    grid[virus.y][virus.x] = "F"
+                }
+                "." -> {
+                    virus.turn(Day19.Dir.LEFT)
+                    grid[virus.y][virus.x] = "W"
+                }
+                "W" -> {
+                    grid[virus.y][virus.x] = "#"
+                    burstsThatInfect++
+                }
+                "F" -> {
+                    grid[virus.y][virus.x] = "."
+                    virus.reverse()
+                }
+            }
+
+            // move forward one step
+            virus.move(1)
+
+            //printGrid()
+        }
+
+        //printGrid()
+        println("After 10000 bursts, $burstsThatInfect caused infection")
     }
 }
