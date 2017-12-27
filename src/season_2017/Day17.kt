@@ -44,21 +44,27 @@ class Day17 : AbstractDay("Day17") {
         var currentPosition = 0
         var currentNumber = 1
 
-        var buffer: MutableList<Int> = mutableListOf(0)
+        var buffer: IntArray = IntArray(50_000_000, { -1 })
+        buffer[0] = 0
+        var currentSize = 1
+
+        val watch = Stopwatch()
+        watch.startTimer()
 
         while (true) {
             var pos = currentPosition + FORWARD_MOVES
-            while (pos >= buffer.size) {
-                pos -= buffer.size
+            while (pos >= currentSize) {
+                pos -= currentSize
             }
 
             currentPosition = pos + 1
-            buffer.add(currentPosition, currentNumber++)
+            buffer[currentPosition] = currentNumber++
+            currentSize++
 
 //            println(" ==> $buffer")
-            if (buffer.size == 50000000) break
-            if (buffer.size % 100000 == 0) {
-                println("buffer: ${buffer.size}")
+            if (currentSize == 50000000) break
+            if (currentSize % 100000 == 0) {
+                println("buffer: ${buffer.size} in ${watch.getElapsedSeconds()} seconds")
             }
         }
 
