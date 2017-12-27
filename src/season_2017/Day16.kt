@@ -2,6 +2,7 @@ package season_2017
 
 import AbstractDay
 import Stopwatch
+import kotlin.system.exitProcess
 
 /**
  * Created by melquiadess on 16/12/2017.
@@ -13,23 +14,31 @@ import Stopwatch
 class Day16 : AbstractDay("Day16") {
     var list: MutableList<String> = mutableListOf()
 
-    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt(), 'f'.toInt(), 'g'.toInt(), 'h'.toInt(), 'i'.toInt(), 'j'.toInt(), 'k'.toInt(), 'l'.toInt(), 'm'.toInt(), 'n'.toInt(), 'o'.toInt(), 'p'.toInt())
+//    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt(), 'f'.toInt(), 'g'.toInt(), 'h'.toInt(), 'i'.toInt(), 'j'.toInt(), 'k'.toInt(), 'l'.toInt(), 'm'.toInt(), 'n'.toInt(), 'o'.toInt(), 'p'.toInt())
+    var programs = IntArray(16, { it -> 97+it })
 //    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt())
+
+    var firstLetter = 'd'
+    var splits: List<String> = listOf()
+    var posA = 0
+    var posB = 0
+    var a = 0
+    var b = 0
 
     private fun getInput() {
         list = readFile("src/season_2017/input/day16-input")
     }
 
-    data class Move(val type: Char = 'q', val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Char = 'z', val b: Char = 'z')
+    data class Move(val type: Char = 'q', val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Int = -1, val b: Int = -1)
 
     val moveList: Array<Move> = Array(10000, { Move() })
 
-    private fun doMove(programs: Array<Int>, move: Move) {
+    private inline fun doMove(move: Move) {
         when (move.type) {
             's' -> spin(move.spin)
             'x' -> exchange(move.posA, move.posB)
             'q' -> programs
-            else -> partner(move.a.toInt(), move.b.toInt())
+            else -> partner(move.a, move.b)
         }
     }
 
@@ -45,13 +54,6 @@ class Day16 : AbstractDay("Day16") {
 
         val timer = Stopwatch()
         timer.startTimer()
-
-        var firstLetter = 'd'
-        var splits: List<String>
-        var posA = 0
-        var posB = 0
-        var a: Char
-        var b: Char
 
         // cache moves
         moves.forEachIndexed { index, move ->
@@ -72,8 +74,8 @@ class Day16 : AbstractDay("Day16") {
                 }
                 'p' -> {
                     // pp/n
-                    a = move[1]
-                    b = move[3]
+                    a = move[1].toInt()
+                    b = move[3].toInt()
 
 //                    moveList.add(Move(firstLetter, a = a, b = b))
                     moveList[index] = Move(firstLetter, a = a, b = b)
@@ -82,19 +84,41 @@ class Day16 : AbstractDay("Day16") {
         }
 
 
-        for (i in 0..1000000000) {
+        val processed = mutableListOf<String>()
+        var prevTime = 0L
+        var currTime = 0L
+
+        val LIMIT = 1_000_000_000
+//        val LIMIT = 0
+
+        for (i in 0 until LIMIT) {
             if (i.rem(100000) == 0) {
-                println("$i moves in ${timer.getElapsedSeconds()} seconds")
+                currTime = timer.getElapsedSeconds()
+                println("----> $i moves in ${currTime - prevTime} seconds (total: $currTime secs)")
+                prevTime = currTime
             }
-            moveList.forEach { move ->
-                doMove(programs, move)
+
+            for (i in moveList.indices) {
+               doMove(moveList[i])
             }
+//            moveList.forEachIndexed { index, move ->
+//                doMove(programs, move)
+////                if (processed.contains(getAnswer())) {
+////                    println("FOUND! at index $index")
+////                } else {
+////                    processed.add(getAnswer())
+////                }
+//            }
         }
 
+        println("FINAL programs: ${getAnswer()} in ${timer.getElapsedSeconds()} seconds")
+    }
+
+    private fun getAnswer(): String {
         var answer = ""
         programs.forEach { letter -> answer += letter.toChar() }
 
-        println("FINAL programs: ${answer} in ${timer.getElapsedSeconds()} seconds")
+        return answer
     }
 
     private fun runTests() {
@@ -103,15 +127,15 @@ class Day16 : AbstractDay("Day16") {
         testPartner()
     }
 
-    var tempSpinArray: Array<Int> = Array(16, { 0 } )
+    var tempSpinArray: IntArray = IntArray(16, { 0 } )
     private inline fun spin(moves: Int) {
-        tempSpinArray = Array(16, { 0 } )
+        tempSpinArray = IntArray(16, { 0 } )
         val offset = programs.size - moves
 
-        for (i in 0 until moves) {
+        for (i in 0..moves-1) {
             tempSpinArray[i] = programs[offset + i]
         }
-        for (i in 0 until offset) {
+        for (i in 0..offset-1) {
             tempSpinArray[programs.size - offset + i] = programs[i]
         }
 
@@ -129,11 +153,12 @@ class Day16 : AbstractDay("Day16") {
     }
 
     private inline fun exchange(posA: Int, posB: Int) {
-        val a = programs[posA]
-        val b = programs[posB]
+        a = programs[posA]
+        b = programs[posB]
 
         programs[posA] = b
         programs[posB] = a
+
     }
 
     private fun testExchange() {
@@ -142,8 +167,8 @@ class Day16 : AbstractDay("Day16") {
     }
 
     private inline fun partner(progA: Int, progB: Int) {
-        val posA = programs.indexOf(progA)
-        val posB = programs.indexOf(progB)
+        posA = programs.indexOf(progA)
+        posB = programs.indexOf(progB)
 
         programs[posA] = progB
         programs[posB] = progA
