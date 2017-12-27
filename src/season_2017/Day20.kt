@@ -8,6 +8,7 @@ import AbstractDay
  *  860 - too high
  *  39 - wrong
  * Part 2:
+ *  486 - tii high
  */
 class Day20 : AbstractDay("Day20") {
     var list: MutableList<String> = mutableListOf()
@@ -27,6 +28,8 @@ class Day20 : AbstractDay("Day20") {
 
         var distanceFromOrigin: Long = 0
             get() = getManhattanDistance(position)
+
+        var isAlive = true
 
         private fun getManhattanDistance(pos: Triple<Long, Long, Long>): Long = Math.abs(pos.first) + Math.abs(pos.second) + Math.abs(pos.third)
     }
@@ -81,5 +84,51 @@ class Day20 : AbstractDay("Day20") {
 
     override fun part2() {
         println("PART 2")
+
+        particles.clear()
+        getInput()
+
+        var leftParticle: Particle
+        var rightParticle: Particle
+
+        var toRemove: MutableList<Particle> = mutableListOf()
+
+        var lastTimeParticlesRemoved = 0
+
+        for (i in 0..1_000_000) {
+            particles.forEach { it.update() }
+            for (left in 0 until particles.size) {
+                for (right in 0 until particles.size) {
+                    leftParticle = particles[left]
+                    rightParticle = particles[right]
+
+                    if (leftParticle.id != rightParticle.id && samePosition(leftParticle.position, rightParticle.position)) {
+                        leftParticle.isAlive = false
+                        rightParticle.isAlive = false
+
+                        toRemove.add(leftParticle)
+                        toRemove.add(rightParticle)
+
+                        print("X ")
+                    }
+                }
+            }
+            if (toRemove.isNotEmpty()) {
+                println()
+                println("Removed ${toRemove.size} colliding particles.")
+                particles.removeAll(toRemove)
+                toRemove.clear()
+                lastTimeParticlesRemoved = i
+            }
+
+            // if last time a particle(s) was removed is more than 1000 iterations ago,
+            // it's pretty sure that they are so far apart that they won't ever have the same positions anymore
+            // so we can stop the loop
+            if (i - lastTimeParticlesRemoved > 1000) break
+        }
+
+        println("There are ${particles.size} particles left.")
     }
+
+    fun samePosition(left: Triple<Long, Long, Long>, right: Triple<Long, Long, Long>) = left.first == right.first && left.second == right.second && left.third == right.third
 }
