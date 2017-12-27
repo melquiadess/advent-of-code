@@ -13,16 +13,17 @@ import AbstractDay
 class Day12 : AbstractDay("Day12") {
     var list: MutableList<String> = mutableListOf()
 
-    // -1 = not checked
+    // -1 = don't use
     //  0 = not connected
     //  1 = connected
-    data class Pipe(val index: Int, val nodes: MutableList<Int>, var isConnectedToZero: Boolean = false)
+    data class Program(val index: Int, val nodes: MutableList<Int>, var isConnectedToZero: Int = 0)
 
-    val pipes: MutableList<Pipe> = mutableListOf()
+    var programs: MutableList<Program> = mutableListOf()
+    var tempPrograms: MutableList<Program> = mutableListOf()
 
     private fun getInput() {
-        list = readFile("src/season_2017/input/day12-input-test")
-//        list = readFile("src/season_2017/input/day12-input")
+//        list = readFile("src/season_2017/input/day12-input-test")
+        list = readFile("src/season_2017/input/day12-input")
     }
 
     override fun part1() {
@@ -31,42 +32,28 @@ class Day12 : AbstractDay("Day12") {
 
         println(list)
 
-        preparePipes(0)
+        programs = initProgramsFromFile()
+        programs = setProgramsForGroup(0, programs)
 
-        pipes.forEach { pipe ->
+        programs.forEach { pipe ->
             println(pipe)
         }
 
-        println("Count of 0: ${getPipesConnectedToZero(pipes)}")
+        println("Count of 0: ${getPipesConnectedToZero(programs)}")
 
         var groupCount = 1
-
-        var filtered = pipes.filter { !it.isConnectedToZero }.toMutableList()
-
-        while (true) {
-            pipes.clear()
-            preparePipes(filtered[0].index)
-
-            groupCount += getPipesConnectedToZero(filtered)
-            filtered = filtered.filter { !it.isConnectedToZero }.toMutableList()
-
-
-
-
-            if (filtered.size == 0) break
-        }
 
         println("Group count: $groupCount")
 
     }
 
-    private fun getPipesConnectedToZero(pipeList: MutableList<Pipe>) = pipeList.count { it.isConnectedToZero }
-    private fun hasZeroInChildren(pipe: Pipe, number: Int) = pipe.nodes.contains(number)
+    private fun getPipesConnectedToZero(programList: MutableList<Program>) = programList.count { it.isConnectedToZero == 1 }
+    private fun hasZeroInChildren(program: Program, number: Int) = program.nodes.contains(number)
 
-    private fun preparePipes(group: Int) {
-        println("********* index: $group *************")
+    private fun initProgramsFromFile(): MutableList<Program> {
+        val programs: MutableList<Program> = mutableListOf()
+
         list.forEachIndexed { index, line ->
-            println(line)
             var splits = line.split("<->")
 
             var children: MutableList<Int> = mutableListOf()
@@ -81,58 +68,71 @@ class Day12 : AbstractDay("Day12") {
                 children.add(childrenSide.trim().toInt())
             }
 
-            pipes.add(index, Pipe(index, children, if (index == group) true else children.contains(group)))
+            programs.add(index, Program(index, children, 0))
         }
 
-        // first line
-        val childrenSplits = list[group].split("<->")[1].split(", ")
-        childrenSplits.forEach { c ->
-            val pos = c.trim().toInt()
-            val p = pipes[pos]
+        return programs
+    }
+
+    private fun setProgramsForGroup(group: Int, programs: MutableList<Program>): MutableList<Program> {
+        val programsGrouped: MutableList<Program> = mutableListOf()
+        programs.forEachIndexed { index, program ->
+            programsGrouped.add(index, Program(index, program.nodes, if (index == group) 1 else if (program.nodes.contains(group)) 1 else 0))
+        }
+
+        // group'th line
+        val children = programsGrouped[group].nodes
+        children.forEach { child ->
+            val pos = child
+            val c = programsGrouped[pos]
+
             val childrenList = mutableListOf(group)
-            if (p.nodes.isNotEmpty()) {
-                p.nodes.forEach { node ->
+            if (c.nodes.isNotEmpty()) {
+                c.nodes.forEach { node ->
                     if (node != group) childrenList.add(node)
                 }
             }
-            pipes.removeAt(pos)
-            pipes.add(pos, Pipe(pos, childrenList, true))
+
+            programsGrouped.removeAt(pos)
+            programsGrouped.add(pos, Program(pos, childrenList, 1))
         }
 
         // for every index which has 0 as child
-        val withZero = pipes.filter { it.nodes.contains(group) }
+        val withZero = programsGrouped.filter { it.nodes.contains(group) }.toMutableList()
 
-        withZero.forEach { pipe ->
-            pipe.nodes.forEach { n ->
+        withZero.forEach { program ->
+            program.nodes.forEach { n ->
                 var pos = n
-                var p = pipes[pos]
-                p.isConnectedToZero = true
+                var p = programs[pos]
+                p.isConnectedToZero = 1
 
-                updateChildrenConnectionsToZero(pos)
+                updateChildrenConnectionsToZero(pos, programsGrouped)
             }
         }
 
-        pipes.forEachIndexed { index, pipe ->
-            pipe.nodes.forEach { it ->
-                if (pipes[it].isConnectedToZero) {
-                    pipe.isConnectedToZero = true
-                    updateChildrenConnectionsToZero(it)
+        programsGrouped.forEachIndexed { _, program ->
+            program.nodes.forEach { it ->
+                if (programsGrouped[it].isConnectedToZero == 1) {
+                    program.isConnectedToZero = 1
+                    updateChildrenConnectionsToZero(it, programsGrouped)
                 }
             }
         }
+
+        return programsGrouped
     }
 
-    private fun updateChildrenConnectionsToZero(index: Int) {
-        val pipe = pipes[index]
+    private fun updateChildrenConnectionsToZero(index: Int, programs: MutableList<Program>) {
+        val program = programs[index]
 
-        pipe.nodes.forEach { number ->
+        program.nodes.forEach { number ->
             var pos = number
-            var p = pipes[pos]
+            var p = programs[pos]
 
-            if (!p.isConnectedToZero) {
-                p.isConnectedToZero = true
+            if (p.isConnectedToZero != 1) {
+                p.isConnectedToZero = 1
                 p.nodes.forEach { it ->
-                    updateChildrenConnectionsToZero(it)
+                    updateChildrenConnectionsToZero(it, programs)
                 }
             }
         }
