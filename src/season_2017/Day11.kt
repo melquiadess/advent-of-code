@@ -6,6 +6,7 @@ import java.util.*
 /**
  * Created by melquiadess on 07/12/2017.
  * Part 1:
+ *  861 - too high
  *
  * Part 2:
  */
@@ -17,53 +18,85 @@ class Day11 : AbstractDay("Day11") {
 
     var MAZE = Array(WIDTH, { Array(HEIGHT, { it -> EMPTY_SQUARE }) })
 
-    var start  = Pair(0, 0)
-    var finish = Pair(0, 0)
-
-    var cp = Pair(0, 0)
+    val START_POSITION = Pair(0, 0)
+    var cp = START_POSITION
 
     var list: MutableList<String> = mutableListOf()
 
     private fun getInput() {
         list = readFile("src/season_2017/input/day11-input")
-
-        list = mutableListOf("ne,ne,ne")
     }
 
     override fun part1() {
         println("PART 1")
         getInput()
 
+//        list = mutableListOf("ne,ne,ne")
+//        list = mutableListOf("ne,ne,sw,sw")
+//        list = mutableListOf("ne,ne,s,s")
+//        list = mutableListOf("se,sw,se,sw,sw")
+
         println(list)
 
         val moves = list.get(0).split(",")
 
         moves.forEach { move ->
-            cp = move(cp, move)
+            println("Before moving $move: $cp")
+            cp = moveOnGrid(cp, move)
+            println("After moving $move : $cp")
+            println()
         }
 
-        println("Current position: $cp")
+        println("Finished at position: $cp")
 
-        println("Path: ${findShortestPath(Pair(0, 0), cp)}")
-        println("Path length: ${findShortestPath(Pair(0, 0), cp).size}")
+        var steps = 0
+
+        // to get to 176 on y, we need to move 176*2 times (starting at 0,0)
+        // so now we're at -352, 176, and now we move to -773 from -352,
+        // so first, me move to -772 from -352 in 420 steps, and 1 more to -773
+        // so 176*2 + 420 + 1 = 352 + 420 + 1 = 773
+
+        println("Steps needed: $steps")
     }
 
     override fun part2() {
         println("PART 2")
     }
 
-    private fun move(currentPosition: Pair<Int, Int>, dir: String): Pair<Int, Int> {
-        return when (dir) {
-            "n" -> Pair(currentPosition.first, currentPosition.second + 1)
-            "ne" -> Pair(currentPosition.first + 1, currentPosition.second + 1)
-            "e" -> Pair(currentPosition.first - 1, currentPosition.second)
-            "se" -> Pair(currentPosition.first + 1, currentPosition.second - 1)
-            "s" -> Pair(currentPosition.first, currentPosition.second - 1)
-            "sw" -> Pair(currentPosition.first - 1, currentPosition.second - 1)
-            "w" -> Pair(currentPosition.first - 1, currentPosition.second)
-            "nw" -> Pair(currentPosition.first - 1, currentPosition.second + 1)
-            else -> Pair(-11111, -11111)
+    private fun moveOnGrid(currentPosition: Pair<Int, Int>, dir: String): Pair<Int, Int> {
+        var xOffset: Int = 0
+        var yOffset: Int = 0
+
+        val even = currentPosition.first.rem(2) == 0
+
+        when (dir) {
+            "n" -> {
+                xOffset = 0
+                yOffset = -1
+            }
+            "ne" -> {
+                xOffset = 1
+                yOffset = if (even) 0 else -1
+            }
+            "se" -> {
+                xOffset = 1
+                yOffset = if (even) 1 else 0
+            }
+            "s" -> {
+                xOffset = 0
+                yOffset = 1
+            }
+            "sw" -> {
+                xOffset = -1
+                yOffset = if (even) 1 else 0
+            }
+            "nw" -> {
+                xOffset = -1
+                yOffset = if (even) 0 else -1
+            }
         }
+
+        return Pair(currentPosition.first + xOffset, currentPosition.second + yOffset)
     }
 
     /**
@@ -100,14 +133,18 @@ class Day11 : AbstractDay("Day11") {
 
             val level = levelArray[point.first][point.second]
             val possibleMoves = ArrayList<Pair<Int, Int>>()
-            // Move Up
-            possibleMoves.add(Pair(point.first, point.second + 1))
-            // Move Left
-            possibleMoves.add(Pair(point.first - 1, point.second))
-            // Down Move
+            // Move N
             possibleMoves.add(Pair(point.first, point.second - 1))
-            // Move Right
+            // Move NE
+            possibleMoves.add(Pair(point.first + 1, point.second - 1))
+            // Move SE
             possibleMoves.add(Pair(point.first + 1, point.second))
+            // Down S
+            possibleMoves.add(Pair(point.first, point.second + 1))
+            // Move SW
+            possibleMoves.add(Pair(point.first - 1, point.second))
+            // Move NW
+            possibleMoves.add(Pair(point.first - 1, point.second - 1))
 
             for (potentialMove in possibleMoves) {
                 if (isInMaze(potentialMove.first, potentialMove.second)) {
@@ -131,14 +168,18 @@ class Day11 : AbstractDay("Day11") {
             shortestPath.push(pointToAdd)
             val level = levelArray[pointToAdd.first][pointToAdd.second]
             val possibleMoves = ArrayList<Pair<Int, Int>>()
-            // Move Right
-            possibleMoves.add(Pair(pointToAdd.first + 1, pointToAdd.second))
-            // Down Move
+            // Move N
             possibleMoves.add(Pair(pointToAdd.first, pointToAdd.second - 1))
-            // Move Left
-            possibleMoves.add(Pair(pointToAdd.first - 1, pointToAdd.second))
-            // Move Up
+            // Move NE
+            possibleMoves.add(Pair(pointToAdd.first + 1, pointToAdd.second - 1))
+            // Move SE
+            possibleMoves.add(Pair(pointToAdd.first + 1, pointToAdd.second))
+            // Down S
             possibleMoves.add(Pair(pointToAdd.first, pointToAdd.second + 1))
+            // Move SW
+            possibleMoves.add(Pair(pointToAdd.first - 1, pointToAdd.second))
+            // Move NW
+            possibleMoves.add(Pair(pointToAdd.first - 1, pointToAdd.second - 1))
 
             for (potentialMove in possibleMoves) {
                 if (isInMaze(potentialMove.first, potentialMove.second)) {
