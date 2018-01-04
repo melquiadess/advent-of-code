@@ -9,6 +9,8 @@ import AbstractDay
  *
  * Part 2:
  *  1694 - too high
+ *  37 - wrong
+ *  199 - too low
  */
 class Day12 : AbstractDay("Day12") {
     var list: MutableList<String> = mutableListOf()
@@ -19,7 +21,6 @@ class Day12 : AbstractDay("Day12") {
     data class Program(val index: Int, val nodes: MutableList<Int>, var isConnectedToZero: Int = 0)
 
     var programs: MutableList<Program> = mutableListOf()
-    var tempPrograms: MutableList<Program> = mutableListOf()
 
     private fun getInput() {
 //        list = readFile("src/season_2017/input/day12-input-test")
@@ -39,16 +40,32 @@ class Day12 : AbstractDay("Day12") {
             println(pipe)
         }
 
-        println("Count of 0: ${getPipesConnectedToZero(programs)}")
+        println("Count of 0: ${getPipesConnectedToZeroCount(programs)}")
 
-        var groupCount = 1
+        var groupCount = 0
 
-        println("Group count: $groupCount")
+        while (true) {
+            var temp= getPipesConnectedToNumber(programs)
+            groupCount++
 
+            programs.removeAll(temp)
+            setNotToUse(temp)
+            programs.addAll(temp)
+
+            programs.sortBy { it.index }
+
+            var newGroupId: Program? = programs.firstOrNull { it.isConnectedToZero == 0 } ?: break
+
+            programs = setProgramsForGroup(newGroupId!!.index, programs)
+        }
+
+        println("Groups count: $groupCount")
     }
 
-    private fun getPipesConnectedToZero(programList: MutableList<Program>) = programList.count { it.isConnectedToZero == 1 }
-    private fun hasZeroInChildren(program: Program, number: Int) = program.nodes.contains(number)
+    private fun setNotToUse(programList: MutableList<Program>) = programList.forEach { it.isConnectedToZero = -1 }
+
+    private fun getPipesConnectedToZeroCount(programList: MutableList<Program>) = programList.count { it.isConnectedToZero == 1 }
+    private fun getPipesConnectedToNumber(programList: MutableList<Program>): MutableList<Program> = programList.filter { it.isConnectedToZero == 1 }.toMutableList()
 
     private fun initProgramsFromFile(): MutableList<Program> {
         val programs: MutableList<Program> = mutableListOf()
@@ -77,7 +94,7 @@ class Day12 : AbstractDay("Day12") {
     private fun setProgramsForGroup(group: Int, programs: MutableList<Program>): MutableList<Program> {
         val programsGrouped: MutableList<Program> = mutableListOf()
         programs.forEachIndexed { index, program ->
-            programsGrouped.add(index, Program(index, program.nodes, if (index == group) 1 else if (program.nodes.contains(group)) 1 else 0))
+            programsGrouped.add(index, Program(index, program.nodes, if (program.isConnectedToZero == -1) -1 else if (index == group) 1 else if (program.nodes.contains(group)) 1 else 0))
         }
 
         // group'th line
