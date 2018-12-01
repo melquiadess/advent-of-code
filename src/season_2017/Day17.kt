@@ -48,8 +48,7 @@ class Day17 : AbstractDay("Day17") {
         buffer[0] = 0
         var currentSize = 1
 
-        val watch = Stopwatch()
-        watch.startTimer()
+        Stopwatch.startTimer()
 
         while (true) {
             var pos = currentPosition + FORWARD_MOVES
@@ -64,7 +63,7 @@ class Day17 : AbstractDay("Day17") {
 //            println(" ==> $buffer")
             if (currentSize == 50000000) break
             if (currentSize % 100000 == 0) {
-                println("buffer: ${buffer.size} in ${watch.getElapsedSeconds()} seconds")
+                println("buffer: ${buffer.size} in ${Stopwatch.getElapsedSeconds()} seconds")
             }
         }
 
