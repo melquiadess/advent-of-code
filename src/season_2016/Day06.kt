@@ -59,7 +59,7 @@ class Day06 : BaseDay {
     }
 
     fun readFile() {
-        val stream = Files.newInputStream(Paths.get("src/season_2016/input/day06-input"))
+        val stream = Files.newInputStream(Paths.get("src/season_2016/input/day01-input"))
 
         stream.buffered().reader().use { reader ->
             list = reader.readLines().toMutableList()

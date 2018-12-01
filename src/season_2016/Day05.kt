@@ -17,10 +17,9 @@ class Day05 : BaseDay {
         println("First password...")
         findPassword(INPUT)
         println("\nSecond password...")
-        var watch = Stopwatch()
-        watch.startTimer()
+        Stopwatch.startTimer()
         findPasswordExtra(INPUT)
-        println("\nDone in ${watch.getElapsedSeconds()} seconds")
+        println("\nDone in ${Stopwatch.getElapsedSeconds()} seconds")
 
         println()
     }

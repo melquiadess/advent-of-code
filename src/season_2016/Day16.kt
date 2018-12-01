@@ -32,8 +32,7 @@ class Day16 : BaseDay {
 
         println("Generated data with ${input.length} length")
 
-        var watch = Stopwatch()
-        watch.startTimer()
+        Stopwatch.startTimer()
 
         var checksum = ""
 
@@ -52,7 +51,7 @@ class Day16 : BaseDay {
 
         println("Checksum is $checksum")
 
-        println("\nDone in ${watch.getElapsedSeconds()} seconds")
+        println("\nDone in ${Stopwatch.getElapsedSeconds()} seconds")
     }
 
     private fun testGenerate() {

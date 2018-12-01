@@ -18,12 +18,11 @@ class Day19 : BaseDay {
 
         init()
 
-        var watch = Stopwatch()
-        watch.startTimer()
+        Stopwatch.startTimer()
 
         stealPresentsBetter()
 
-        println("Done in ${watch.getElapsedSeconds()} seconds")
+        println("Done in ${Stopwatch.getElapsedSeconds()} seconds")
     }
 
     fun stealPresents() {

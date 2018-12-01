@@ -12,16 +12,15 @@ class Day10 : BaseDay {
     override fun run() {
         println("Day10")
 
-        var timer = Stopwatch()
-        timer.startTimer()
+        Stopwatch.startTimer()
 
         var input = INPUT
         for (i in 1..50) {
             input = printMonoSequences(input)
 
             when (i) {
-                40 -> { print("Length: ${input.length} Done in ${timer.getElapsedSeconds()} seconds") }
-                50 -> { print("Length: ${input.length} Done in ${timer.getElapsedSeconds()} seconds") }
+                40 -> { print("Length: ${input.length} Done in ${Stopwatch.getElapsedSeconds()} seconds") }
+                50 -> { print("Length: ${input.length} Done in ${Stopwatch.getElapsedSeconds()} seconds") }
             }
         }
     }
