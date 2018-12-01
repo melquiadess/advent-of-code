@@ -2,7 +2,6 @@ package season_2017
 
 import AbstractDay
 import Stopwatch
-import kotlin.system.exitProcess
 
 /**
  * Created by melquiadess on 16/12/2017.
@@ -14,9 +13,7 @@ import kotlin.system.exitProcess
 class Day16 : AbstractDay("Day16") {
     var list: MutableList<String> = mutableListOf()
 
-//    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt(), 'f'.toInt(), 'g'.toInt(), 'h'.toInt(), 'i'.toInt(), 'j'.toInt(), 'k'.toInt(), 'l'.toInt(), 'm'.toInt(), 'n'.toInt(), 'o'.toInt(), 'p'.toInt())
     var programs = IntArray(16, { it -> 97+it })
-//    var programs = arrayOf('a'.toInt(), 'b'.toInt(), 'c'.toInt(), 'd'.toInt(), 'e'.toInt())
 
     var firstLetter = 'd'
     var splits: List<String> = listOf()
@@ -31,7 +28,7 @@ class Day16 : AbstractDay("Day16") {
 
     data class Move(val type: Char = 'q', val spin: Int = -1, val posA: Int = -1, val posB: Int = -1, val a: Int = -1, val b: Int = -1)
 
-    val moveList: Array<Move> = Array(10000, { Move() })
+    val cachedMoves: Array<Move> = Array(10000, { Move() })
 
     private inline fun doMove(move: Move) {
         when (move.type) {
@@ -52,16 +49,14 @@ class Day16 : AbstractDay("Day16") {
 
         val moves = list[0].split(",")
 
-        val timer = Stopwatch()
-        timer.startTimer()
+        Stopwatch.startTimer()
 
         // cache moves
         moves.forEachIndexed { index, move ->
             firstLetter = move[0]
             when (firstLetter) {
                 's' -> {
-//                    moveList.add(Move(firstLetter, move.substring(1).toInt()))
-                    moveList[index] = Move(firstLetter, move.substring(1).toInt())
+                    cachedMoves[index] = Move(firstLetter, move.substring(1).toInt())
                 }
                 'x' -> {
                     // x13/14
@@ -69,49 +64,53 @@ class Day16 : AbstractDay("Day16") {
                     posA = splits[0].substring(1).toInt()
                     posB = splits[1].toString().toInt()
 
-//                    moveList.add(Move(firstLetter, posA = posA, posB = posB))
-                    moveList[index] = Move(firstLetter, posA = posA, posB = posB)
+                    cachedMoves[index] = Move(firstLetter, posA = posA, posB = posB)
                 }
                 'p' -> {
                     // pp/n
                     a = move[1].toInt()
                     b = move[3].toInt()
 
-//                    moveList.add(Move(firstLetter, a = a, b = b))
-                    moveList[index] = Move(firstLetter, a = a, b = b)
+                    cachedMoves[index] = Move(firstLetter, a = a, b = b)
                 }
             }
         }
 
 
-        val processed = mutableListOf<String>()
         var prevTime = 0L
         var currTime = 0L
 
         val LIMIT = 1_000_000_000
-//        val LIMIT = 0
+
+        var cachedStrings = mutableListOf<String>()
+        var currentSequence: String
 
         for (i in 0 until LIMIT) {
             if (i.rem(100000) == 0) {
-                currTime = timer.getElapsedSeconds()
+                currTime = Stopwatch.getElapsedSeconds()
                 println("----> $i moves in ${currTime - prevTime} seconds (total: $currTime secs)")
                 prevTime = currTime
             }
 
-            for (i in moveList.indices) {
-               doMove(moveList[i])
+            for (i in 0 until cachedMoves.size) {
+               doMove(cachedMoves[i])
             }
-//            moveList.forEachIndexed { index, move ->
-//                doMove(programs, move)
-////                if (processed.contains(getAnswer())) {
-////                    println("FOUND! at index $index")
-////                } else {
-////                    processed.add(getAnswer())
-////                }
-//            }
+
+            currentSequence = getAnswer()
+            if (cachedStrings.contains(currentSequence)) {
+                println(" BOOM!!! Repeated string $currentSequence at index ${cachedStrings.size}, which is our frequency!")
+
+                var ind = LIMIT.rem(cachedStrings.size) - 1
+                println("Sequence at $ind is ${cachedStrings[ind]}")
+                break
+            }
+            else {
+                cachedStrings.add(currentSequence)
+            }
+
         }
 
-        println("FINAL programs: ${getAnswer()} in ${timer.getElapsedSeconds()} seconds")
+        println("FINAL programs: ${getAnswer()} in ${Stopwatch.getElapsedSeconds()} seconds")
     }
 
     private fun getAnswer(): String {
@@ -132,7 +131,7 @@ class Day16 : AbstractDay("Day16") {
         tempSpinArray = IntArray(16, { 0 } )
         val offset = programs.size - moves
 
-        for (i in 0..moves-1) {
+        for (i in 0 until moves) {
             tempSpinArray[i] = programs[offset + i]
         }
         for (i in 0..offset-1) {
