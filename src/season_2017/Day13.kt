@@ -48,8 +48,8 @@ class Day13 : AbstractDay("Day13") {
     }
 
     private fun getInput() {
-        list = readFile("src/season_2017/input/day13-input-test")
-//        list = readFile("src/season_2017/input/day13-input")
+//        list = readFile("src/season_2017/input/day13-input-test")
+        list = readFile("src/season_2017/input/day13-input")
     }
 
     override fun part1() {
@@ -101,14 +101,18 @@ class Day13 : AbstractDay("Day13") {
 
         var tripSeverity = 1
 
-        var delay = 0
+        // 116000
+        var delay = 2000000
 
         while (true) {
             firewall.clear()
             processInput()
             tripSeverity = 0
 
-            println("Delay..moving $delay times")
+            if (delay.rem(1000) == 0) {
+                println("Delay..moving $delay times")
+            }
+
             for (i in 0 until delay) {
                 firewall.forEach { it.value.move() }
             }
@@ -116,8 +120,12 @@ class Day13 : AbstractDay("Day13") {
             (0 until firewall.size).forEachIndexed outer@ { position, time ->
                 firewall.forEach { layer ->
                     if (layer.value.scannerPosition == 0 && position == layer.value.depth) {
-                        println("Adding ${layer.value.severity} severity at position $position")
+                        //println("Adding ${layer.value.severity} severity at position $position")
                         tripSeverity += layer.value.severity
+
+                        if (position != 0) {
+                            return@outer
+                        }
                     }
 
                     layer.value.move()
