@@ -13,12 +13,12 @@ class Day03 : AbstractDay("Day03") {
     var square1: Pair<Int, Int> = Pair(0,0)
     var squareX: Pair<Int, Int> = Pair(0,0)
 
+    val TARGET_SQUARE = 368078
+
     override fun part1() {
         println(">>>>>>>>>>>>>> PART 1 <<<<<<<<<<<<")
 
         testManhattanDistance()
-
-        val TARGET_SQUARE = 265149
         calculateManhattan(TARGET_SQUARE)
     }
 
@@ -196,6 +196,11 @@ class Day03 : AbstractDay("Day03") {
         println("Level 4: ${getSquareNumbers(4)}")
         println("Level 5: ${getSquareNumbers(5)}")
         println("Level 6: ${getSquareNumbers(6)}")
+
+        val level5 = getSquareNumbers(5)
+        val solution = level5.first { it > TARGET_SQUARE }
+
+        println("Solution: $solution")
 
     }
 
